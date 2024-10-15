@@ -3,12 +3,14 @@
   become: true
   pre_tasks:
     - name: Install updates (CentOS)
+      tags: always
       dnf:
         update_only: yes
         update_cache: yes
       when: ansible_distribution == "CentOS"
 
     - name: Install updates (Ubuntu)
+      tags: always
       apt:
         upgrade: dist
         update_cache: yes
@@ -18,6 +20,7 @@
   become: true
   tasks:
     - name: Install httpd and PHP packages (CentOS)
+      tags: apache,centos,httpd
       dnf:
         name:
           - httpd
@@ -26,6 +29,7 @@
       when: ansible_distribution == "CentOS"
 
     - name: Install apache2 and PHP packages (Ubuntu)
+      tags: apache,apache2,ubuntu
       apt:
         name:
           - apache2
@@ -33,16 +37,27 @@
         state: latest
       when: ansible_distribution == "Ubuntu"
 
+    - name: Copy HTML file for site
+      tags: apache,apache,apache2,httpd
+      copy:
+        src: default_site.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0644'
+
 - hosts: db_servers
   become: true
   tasks:
     - name: Install MariaDB server package (CentOS)
+      tags: centos,db,mariadb
       dnf:
         name: mariadb
         state: latest
       when: ansible_distribution == "CentOS"
 
     - name: Install MariaDB server (Ubuntu)
+      tags: db,mariadb,ubuntu
       apt:
         name: mariadb-server
         state: latest
@@ -52,6 +67,7 @@
   become: true
   tasks:
     - name: Install Samba package
+      tags: samba
       package:
         name: samba
         state: latest
