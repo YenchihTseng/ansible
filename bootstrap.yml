@@ -1,0 +1,41 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+    - name: Install updates (CentOS)
+      tags: always
+      dnf:
+        update_only: yes
+        update_cache: yes
+      when: ansible_distribution == "CentOS"
+
+    - name: Install updates (Ubuntu)
+      tags: always
+      apt:
+        upgrade: dist
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+- hosts: all
+  become: true
+  tasks:
+    - name: create ce12 user
+      tags: always
+      user:
+        name: ce12
+        groups: root
+    
+    - name: add ssh key for ce12
+      tags: always
+      authorized_key:
+        user: ce12
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINi2ZpoN27rLF0TouRvbX05XdttwI+D+/c2XtBKqwW7r ansible"
+
+    - name: add sudoers file for ce12
+      tags: always
+      copy:
+        src: sudoer_ce12
+        dest: /etc/sudoers.d/ce12
+        owner: root
+        group: root
+        mode: 0440
