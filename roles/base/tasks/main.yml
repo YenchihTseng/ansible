@@ -1,0 +1,4 @@
+- name: add ssh key for ce12
+  authorized_key:
+    user: ce12
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINi2ZpoN27rLF0TouRvbX05XdttwI+D+/c2XtBKqwW7r ansible"
